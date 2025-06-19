@@ -1,28 +1,10 @@
-# 🐎 Hoof Hearted - Frontend Dockerfile (Vue.js)
-# Multi-stage build for production optimization
+# 🐎 Hoof Hearted - Frontend Dockerfile (Magic Dashboard)
+# Serves the integrated Magic dashboard with real API connections
 
-# Stage 1: Build Vue.js application
-FROM node:18-alpine AS build
-
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install
-
-# Copy source code
-COPY . .
-
-# Build for production
-RUN npm run build
-
-# Stage 2: Serve with Nginx
 FROM nginx:alpine
 
-# Copy built application
-COPY --from=build /app/dist /usr/share/nginx/html
+# Copy Magic dashboard directly
+COPY public/index.html /usr/share/nginx/html/index.html
 
 # Copy nginx configuration (will be mounted from host)
 # Note: nginx.conf is mounted as volume in docker-compose.yml

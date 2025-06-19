@@ -28,8 +28,7 @@ services:
   backend:
     build:
       context: .
-      dockerfile: Dockerfile.test
-      target: backend-production
+      dockerfile: Dockerfile.universal
     container_name: hoof-hearted-backend
     environment:
       - DATABASE_URL=postgresql://${DB_USER:-hoof_hearted}:${DB_PASSWORD:-secure_dreams_password}@database:5432/${DB_NAME:-hoof_hearted}
@@ -71,12 +70,11 @@ services:
     networks:
       - hoof-hearted-network
 
-  # Vue.js Frontend with Real API Integration
-  frontend:
+  # All-in-One: Vue.js Frontend + Flask Backend + Nginx
+  hoof-hearted:
     build:
       context: .
-      dockerfile: Dockerfile.test
-      target: frontend-nginx-production
+      dockerfile: Dockerfile.universal
     container_name: hoof-hearted-frontend
     ports:
       - "9090:80"  # Dreams deployment port

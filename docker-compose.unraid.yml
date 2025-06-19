@@ -1,0 +1,57 @@
+# 🐎 Hoof Hearted - Docker Compose for Unraid Testing
+# Single container with Vue.js Magic Dashboard + Flask Backend + Nginx
+
+services:
+  # All-in-one container for Unraid deployment
+  hoof-hearted:
+    build:
+      context: .
+      dockerfile: Dockerfile.unraid.new
+    container_name: hoof-hearted-unraid
+    ports:
+      - "9091:80"  # Unraid test port (avoiding conflicts)
+    environment:
+      - FLASK_ENV=production
+      - NODE_ENV=production
+      - DATABASE_URL=sqlite:///app/data/hoof_hearted.db
+      - GPU_MONITORING_ENABLED=true
+      - SYSTEM_MONITORING_ENABLED=true
+      - ENABLE_PROCESS_MONITORING=true
+      - LOG_LEVEL=INFO
+      - DASHBOARD_PORT=80
+      - API_URL=http://localhost:5000
+      - VITE_API_URL=http://localhost:5000
+      - CUSTOM_TITLE=Hoof Hearted - Unraid Test
+    volumes:
+      - hoof_hearted_data:/app/data           # Persistent data
+      - hoof_hearted_config:/app/config       # Configuration
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # Docker monitoring
+      - /proc:/host/proc:ro                   # Process monitoring
+      - /sys:/host/sys:ro                     # System monitoring
+    restart: unless-stopped
+    # GPU access (uncomment on systems with NVIDIA GPUs)
+    # devices:
+    #   - /dev/nvidia0:/dev/nvidia0
+    #   - /dev/nvidiactl:/dev/nvidiactl
+    #   - /dev/nvidia-uvm:/dev/nvidia-uvm
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    privileged: false
+    hostname: hoof-hearted-unraid
+    healthcheck:
+      test: ["CMD", "/health-check.sh"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+volumes:
+  hoof_hearted_data:
+    driver: local
+  hoof_hearted_config:
+    driver: local

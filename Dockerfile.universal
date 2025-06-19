@@ -1,0 +1,218 @@
+# 🐎 Hoof Hearted - Universal Multi-Platform Container
+# Supports: Linux (Asus/Intel), macOS (Intel/Apple Silicon)
+# Uses pre-built frontend to avoid ARM64/Rollup issues
+
+FROM python:3.11-slim AS production
+
+# Platform arguments
+ARG TARGETPLATFORM
+ARG BUILDPLATFORM
+
+# Install base system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    python3-dev \
+    build-essential \
+    curl \
+    nginx \
+    supervisor \
+    procps \
+    psmisc \
+    lsof \
+    htop \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install platform-specific monitoring tools (best effort)
+RUN apt-get update && \
+    apt-get install -y pciutils || true && \
+    apt-get install -y dmidecode || true && \
+    apt-get install -y hwinfo || true && \
+    apt-get install -y mesa-utils || true && \
+    apt-get install -y intel-gpu-tools || true && \
+    rm -rf /var/lib/apt/lists/* || true
+
+# Install Python dependencies
+WORKDIR /app/backend
+COPY src/backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend application
+COPY src/backend/ .
+
+# Copy pre-built frontend (avoids ARM64 build issues)
+COPY src/frontend/dist/ /usr/share/nginx/html/
+
+# Copy nginx configuration
+COPY deploy/nginx/nginx-unraid.conf /etc/nginx/nginx.conf
+
+# Create platform detection script
+RUN echo '#!/bin/bash\n\
+# Universal platform and GPU detection\n\
+echo "Platform: ${TARGETPLATFORM:-$(uname -m)}"\n\
+echo "Architecture: $(uname -m)"\n\
+echo "OS: $(uname -s)"\n\
+\n\
+# Detect GPU types (best effort)\n\
+GPU_DETECTED=false\n\
+\n\
+if command -v nvidia-smi >/dev/null 2>&1; then\n\
+    echo "NVIDIA GPU detected"\n\
+    export GPU_TYPE="nvidia"\n\
+    export GPU_MONITORING_AVAILABLE=true\n\
+    GPU_DETECTED=true\n\
+elif command -v rocm-smi >/dev/null 2>&1; then\n\
+    echo "AMD GPU with ROCm detected"\n\
+    export GPU_TYPE="amd"\n\
+    export GPU_MONITORING_AVAILABLE=true\n\
+    GPU_DETECTED=true\n\
+elif lspci 2>/dev/null | grep -i "amd\\|radeon" >/dev/null 2>&1; then\n\
+    echo "AMD GPU detected (basic)"\n\
+    export GPU_TYPE="amd"\n\
+    export GPU_MONITORING_AVAILABLE=false\n\
+    GPU_DETECTED=true\n\
+elif lspci 2>/dev/null | grep -i "intel.*graphics\\|intel.*vga" >/dev/null 2>&1; then\n\
+    echo "Intel GPU detected"\n\
+    export GPU_TYPE="intel"\n\
+    export GPU_MONITORING_AVAILABLE=false\n\
+    GPU_DETECTED=true\n\
+fi\n\
+\n\
+if [ "$GPU_DETECTED" = false ]; then\n\
+    echo "No dedicated GPU detected - CPU monitoring only"\n\
+    export GPU_TYPE="none"\n\
+    export GPU_MONITORING_AVAILABLE=false\n\
+fi\n\
+\n\
+# Platform-specific optimizations\n\
+case "$(uname -s)" in\n\
+    Linux*)\n\
+        export PLATFORM_TYPE="linux"\n\
+        export ENABLE_HARDWARE_MONITORING=true\n\
+        export ENABLE_DOCKER_MONITORING=true\n\
+        ;;\n\
+    Darwin*)\n\
+        export PLATFORM_TYPE="macos"\n\
+        export ENABLE_HARDWARE_MONITORING=false\n\
+        export ENABLE_DOCKER_MONITORING=false\n\
+        # macOS in Docker has limited hardware access\n\
+        ;;\n\
+    *)\n\
+        export PLATFORM_TYPE="unknown"\n\
+        export ENABLE_HARDWARE_MONITORING=false\n\
+        export ENABLE_DOCKER_MONITORING=false\n\
+        ;;\n\
+esac\n\
+\n\
+# Always enable basic monitoring\n\
+export GPU_MONITORING_ENABLED=true\n\
+export SYSTEM_MONITORING_ENABLED=true\n\
+export PLATFORM_OPTIMIZED=true\n\
+' > /platform-detect.sh && chmod +x /platform-detect.sh
+
+# Create supervisor configuration
+RUN echo '[supervisord]\n\
+nodaemon=true\n\
+user=root\n\
+\n\
+[program:nginx]\n\
+command=nginx -g "daemon off;"\n\
+autostart=true\n\
+autorestart=true\n\
+stdout_logfile=/var/log/nginx/access.log\n\
+stderr_logfile=/var/log/nginx/error.log\n\
+\n\
+[program:flask]\n\
+command=bash -c "source /platform-detect.sh && python app.py"\n\
+directory=/app/backend\n\
+autostart=true\n\
+autorestart=true\n\
+environment=FLASK_ENV=production,HOST=0.0.0.0,PORT=5000\n\
+stdout_logfile=/var/log/flask.log\n\
+stderr_logfile=/var/log/flask.log\n\
+' > /etc/supervisor/conf.d/supervisord.conf
+
+# Create enhanced health check
+RUN echo '#!/bin/bash\n\
+# Universal health check\n\
+source /platform-detect.sh\n\
+\n\
+# Check nginx (Vue.js frontend)\n\
+if ! curl -f http://localhost/ >/dev/null 2>&1; then\n\
+    echo "Frontend health check failed"\n\
+    exit 1\n\
+fi\n\
+\n\
+# Check Flask backend\n\
+if ! curl -f http://localhost:5000/health >/dev/null 2>&1; then\n\
+    echo "Backend health check failed"\n\
+    exit 1\n\
+fi\n\
+\n\
+# Check API\n\
+if ! curl -f http://localhost:5000/api/status >/dev/null 2>&1; then\n\
+    echo "API health check failed"\n\
+    exit 1\n\
+fi\n\
+\n\
+echo "All services healthy on $PLATFORM_TYPE with $GPU_TYPE GPU support"\n\
+' > /health-check.sh && chmod +x /health-check.sh
+
+# Create startup script
+RUN echo '#!/bin/bash\n\
+echo "🐎 Hoof Hearted Universal - Starting on $(uname -s)/$(uname -m)"\n\
+\n\
+# Run platform detection\n\
+source /platform-detect.sh\n\
+\n\
+# Create data directories\n\
+mkdir -p /app/data /app/config\n\
+\n\
+echo "Platform: $PLATFORM_TYPE"\n\
+echo "GPU: $GPU_TYPE (monitoring: $GPU_MONITORING_AVAILABLE)"\n\
+echo "Hardware monitoring: $ENABLE_HARDWARE_MONITORING"\n\
+\n\
+# Start supervisor\n\
+exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf\n\
+' > /startup.sh && chmod +x /startup.sh
+
+# Create nginx directories and fix permissions
+RUN mkdir -p /var/log/nginx && \
+    touch /var/log/flask.log && \
+    chmod 755 /var/log/nginx && \
+    chmod 644 /var/log/flask.log
+
+# Expose port 80
+EXPOSE 80
+
+# Universal environment variables
+ENV FLASK_ENV=production \
+    NODE_ENV=production \
+    DATABASE_URL=sqlite:///app/data/hoof_hearted.db \
+    GPU_MONITORING_ENABLED=true \
+    SYSTEM_MONITORING_ENABLED=true \
+    PLATFORM_OPTIMIZED=true \
+    ENABLE_PROCESS_MONITORING=true \
+    LOG_LEVEL=INFO \
+    DASHBOARD_PORT=80 \
+    API_URL=http://localhost:5000 \
+    VITE_API_URL=http://localhost:5000
+
+# Create directories
+RUN mkdir -p /app/data /app/config && \
+    chown -R root:root /app/data /app/config
+
+# Universal labels
+LABEL maintainer="SpicyRiceCakes <contact@spicyricecakes.com>" \
+      description="Hoof Hearted - Universal Multi-Platform Home Server Monitoring" \
+      version="2.1.0-universal" \
+      platforms="linux/amd64,linux/arm64,macos-compatible" \
+      gpu-support="nvidia,amd,intel,cpu-only" \
+      features="vue-magic-dashboard,real-api-integration,universal-compatibility"
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD /health-check.sh
+
+# Use startup script
+CMD ["/startup.sh"]

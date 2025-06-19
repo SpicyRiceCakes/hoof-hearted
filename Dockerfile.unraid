@@ -1,0 +1,92 @@
+# 🐎 Hoof Hearted - Complete Application for Unraid
+# Includes Magic Dashboard frontend + Flask backend + Nginx proxy
+# Multi-platform build for AMD64/ARM64 compatibility
+
+FROM python:3.11-slim AS python-base
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    python3-dev \
+    build-essential \
+    curl \
+    nginx \
+    supervisor \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+WORKDIR /app/backend
+COPY src/backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend application
+COPY src/backend/ .
+
+# Copy Magic dashboard
+COPY src/frontend/public/index.html /usr/share/nginx/html/index.html
+
+# Copy nginx configuration for Unraid
+COPY deploy/nginx/nginx-unraid.conf /etc/nginx/nginx.conf
+
+# Create supervisor configuration
+RUN echo '[supervisord]\n\
+nodaemon=true\n\
+user=root\n\
+\n\
+[program:nginx]\n\
+command=nginx -g "daemon off;"\n\
+autostart=true\n\
+autorestart=true\n\
+stdout_logfile=/var/log/nginx/access.log\n\
+stderr_logfile=/var/log/nginx/error.log\n\
+\n\
+[program:flask]\n\
+command=python app.py\n\
+directory=/app/backend\n\
+autostart=true\n\
+autorestart=true\n\
+environment=FLASK_ENV=production,HOST=0.0.0.0,PORT=5000\n\
+stdout_logfile=/var/log/flask.log\n\
+stderr_logfile=/var/log/flask.log\n\
+' > /etc/supervisor/conf.d/supervisord.conf
+
+# Create nginx directories and fix permissions
+RUN mkdir -p /var/log/nginx && \
+    touch /var/log/flask.log && \
+    chmod 755 /var/log/nginx && \
+    chmod 644 /var/log/flask.log
+
+# Health check script
+RUN echo '#!/bin/bash\n\
+# Check if nginx is serving\n\
+curl -f http://localhost/health >/dev/null 2>&1 || exit 1\n\
+# Check if Flask is responding\n\
+curl -f http://localhost:5000/health >/dev/null 2>&1 || exit 1\n\
+echo "All services healthy"\n\
+' > /health-check.sh && chmod +x /health-check.sh
+
+# Expose port 80 for the Magic dashboard
+EXPOSE 80
+
+# Environment variables with defaults
+ENV FLASK_ENV=production \
+    NODE_ENV=production \
+    DATABASE_URL=sqlite:///hoof_hearted.db \
+    GPU_MONITORING_ENABLED=true \
+    UPDATE_FREQUENCY=normal \
+    ENABLE_PROCESS_MONITORING=true \
+    LOG_LEVEL=INFO
+
+# SpicyRiceCakes metadata
+LABEL maintainer="SpicyRiceCakes <contact@spicyricecakes.com>" \
+      description="Hoof Hearted - Home Server Monitoring Dashboard with Magic UI" \
+      version="1.0.0" \
+      architecture="multi-platform"
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD /health-check.sh
+
+# Start supervisor to manage both nginx and flask
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

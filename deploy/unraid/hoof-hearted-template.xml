@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>HoofHearted</Name>
-  <Repository>spicyricecakes/hoof-hearted:latest</Repository>
-  <Registry>https://hub.docker.com/r/spicyricecakes/hoof-hearted</Registry>
+  <Repository>ghcr.io/spicyricecakes/hoof-hearted:unraid-v2</Repository>
+  <Registry>https://github.com/SpicyRiceCakes/hoof-hearted/pkgs/container/hoof-hearted</Registry>
   <Network>bridge</Network>
   <MyIP/>
   <Shell>bash</Shell>
@@ -10,17 +10,27 @@
   <Support>https://github.com/spicyricecakes/hoof-hearted/issues</Support>
   <Project>https://github.com/spicyricecakes/hoof-hearted</Project>
   <Overview>
-    🐎 Hoof Hearted - Home Server Monitoring Dashboard
+    🐎 Hoof Hearted - Home Server Monitoring Dashboard v2.0
+    
+    NEW: Beautiful Vue.js Magic Dashboard with real-time API integration!
     
     Answer "Why is my GPU fan running?" with real-time system monitoring and process identification.
     
-    Features:
+    ✨ NEW Features in v2.0:
+    • 🎨 Vue.js Magic Dashboard (converted from React Magic design)
+    • 📊 Real-time system monitoring with WebSocket updates
+    • 🎮 GPU monitoring with process attribution
+    • 🔍 Smart process identification and classification
+    • 🌙 Dark/Light theme toggle with smooth animations
+    • 📱 Mobile-responsive design with Tailwind CSS
+    • 🚀 Single container deployment (Nginx + Flask + Vue.js)
+    
+    Core Features:
     • Real-time GPU, CPU, and memory monitoring
     • Process identification and resource usage tracking
-    • Mobile-friendly dashboard accessible from any device
-    • Historical data and trend analysis
     • Configurable alerts and notifications
     • Zero external dependencies - all data stays local
+    • Beautiful animated dashboard with circular progress indicators
     
     🌶️ Built with SpicyRiceCakes philosophy: Emotion → Logic → Joy
     

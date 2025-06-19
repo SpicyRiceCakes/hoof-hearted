@@ -1,0 +1,54 @@
+# 🐎 Hoof Hearted - Simplified Dreams Deployment
+# Single universal container for RTX 4090 workstation
+
+services:
+  # All-in-One Container: Vue.js + Flask + Nginx
+  hoof-hearted:
+    build:
+      context: .
+      dockerfile: Dockerfile.universal
+    container_name: hoof-hearted-dreams
+    ports:
+      - "9090:80"  # Dreams deployment port
+    environment:
+      - FLASK_ENV=production
+      - NODE_ENV=production
+      - DATABASE_URL=sqlite:///app/data/hoof_hearted.db
+      - GPU_MONITORING_ENABLED=true
+      - SYSTEM_MONITORING_ENABLED=true
+      - ENABLE_PROCESS_MONITORING=true
+      - LOG_LEVEL=INFO
+      - CUSTOM_TITLE=Hoof Hearted - Dreams RTX 4090
+    volumes:
+      - hoof_hearted_data:/app/data
+      - hoof_hearted_config:/app/config
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    restart: unless-stopped
+    # GPU access for Dreams RTX 4090
+    devices:
+      - /dev/nvidia0:/dev/nvidia0
+      - /dev/nvidiactl:/dev/nvidiactl
+      - /dev/nvidia-uvm:/dev/nvidia-uvm
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    privileged: false
+    hostname: hoof-hearted-dreams
+    healthcheck:
+      test: ["CMD", "/health-check.sh"]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+volumes:
+  hoof_hearted_data:
+    driver: local
+  hoof_hearted_config:
+    driver: local
