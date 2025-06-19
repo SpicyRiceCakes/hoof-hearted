@@ -1,0 +1,106 @@
+# 🐎 Hoof Hearted - Docker Compose for Dreams Deployment
+# Optimized for Dreams GPU workstation with RTX 4090
+
+services:
+  # PostgreSQL Database
+  database:
+    image: postgres:15-alpine
+    container_name: hoof-hearted-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-hoof_hearted}
+      POSTGRES_USER: ${DB_USER:-hoof_hearted}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-secure_dreams_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./deploy/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-hoof_hearted} -d ${DB_NAME:-hoof_hearted}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - hoof-hearted-network
+
+  # Flask Backend API - Dreams Configuration
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      target: backend-production
+    container_name: hoof-hearted-backend
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER:-hoof_hearted}:${DB_PASSWORD:-secure_dreams_password}@database:5432/${DB_NAME:-hoof_hearted}
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
+      - SECRET_KEY=${SECRET_KEY:-dreams-production-secret-key}
+      - WEBSOCKET_PORT=5000
+      - NVIDIA_VISIBLE_DEVICES=all
+      - GPU_MONITORING_ENABLED=true
+      - SYSTEM_MONITORING_ENABLED=true
+    ports:
+      - "5001:5000"
+    depends_on:
+      database:
+        condition: service_healthy
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # For Docker monitoring
+      - /proc:/host/proc:ro                           # For process monitoring
+      - /sys:/host/sys:ro                            # For system stats
+    # GPU access for Dreams RTX 4090
+    devices:
+      - /dev/nvidia0:/dev/nvidia0                     # GPU access
+      - /dev/nvidiactl:/dev/nvidiactl                 # NVIDIA control device
+      - /dev/nvidia-uvm:/dev/nvidia-uvm               # NVIDIA UVM device
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    privileged: false
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - hoof-hearted-network
+
+  # Vue.js Frontend with Real API Integration
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      target: frontend-nginx-production
+    container_name: hoof-hearted-frontend
+    ports:
+      - "9090:80"  # Dreams deployment port
+    depends_on:
+      - backend
+    restart: unless-stopped
+    environment:
+      - API_URL=http://backend:5000
+      - NODE_ENV=production
+      - VITE_API_URL=http://localhost:5001  # For client-side API calls
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - hoof-hearted-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  hoof-hearted-network:
+    driver: bridge

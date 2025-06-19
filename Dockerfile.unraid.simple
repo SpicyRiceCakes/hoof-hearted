@@ -1,0 +1,118 @@
+# 🐎 Hoof Hearted - Unraid Container with Pre-built Vue.js Magic Dashboard
+# Simplified build using pre-compiled frontend
+
+FROM python:3.11-slim AS production
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    g++ \
+    python3-dev \
+    build-essential \
+    curl \
+    nginx \
+    supervisor \
+    procps \
+    psmisc \
+    lsof \
+    htop \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Python dependencies
+WORKDIR /app/backend
+COPY src/backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy backend application
+COPY src/backend/ .
+
+# Copy pre-built frontend
+COPY src/frontend/dist/ /usr/share/nginx/html/
+
+# Copy nginx configuration for Unraid
+COPY deploy/nginx/nginx-unraid.conf /etc/nginx/nginx.conf
+
+# Create supervisor configuration
+RUN echo '[supervisord]\n\
+nodaemon=true\n\
+user=root\n\
+\n\
+[program:nginx]\n\
+command=nginx -g "daemon off;"\n\
+autostart=true\n\
+autorestart=true\n\
+stdout_logfile=/var/log/nginx/access.log\n\
+stderr_logfile=/var/log/nginx/error.log\n\
+\n\
+[program:flask]\n\
+command=python app.py\n\
+directory=/app/backend\n\
+autostart=true\n\
+autorestart=true\n\
+environment=FLASK_ENV=production,HOST=0.0.0.0,PORT=5000,GPU_MONITORING_ENABLED=true\n\
+stdout_logfile=/var/log/flask.log\n\
+stderr_logfile=/var/log/flask.log\n\
+' > /etc/supervisor/conf.d/supervisord.conf
+
+# Create nginx directories and fix permissions
+RUN mkdir -p /var/log/nginx && \
+    touch /var/log/flask.log && \
+    chmod 755 /var/log/nginx && \
+    chmod 644 /var/log/flask.log
+
+# Create health check script
+RUN echo '#!/bin/bash\n\
+# Check if nginx is serving the Vue app\n\
+if ! curl -f http://localhost/ >/dev/null 2>&1; then\n\
+    echo "Frontend health check failed"\n\
+    exit 1\n\
+fi\n\
+\n\
+# Check if Flask backend is responding\n\
+if ! curl -f http://localhost:5000/health >/dev/null 2>&1; then\n\
+    echo "Backend health check failed"\n\
+    exit 1\n\
+fi\n\
+\n\
+# Check if Vue app can connect to backend API\n\
+if ! curl -f http://localhost:5000/api/status >/dev/null 2>&1; then\n\
+    echo "API health check failed"\n\
+    exit 1\n\
+fi\n\
+\n\
+echo "All services healthy - Vue.js Magic Dashboard + Flask API"\n\
+' > /health-check.sh && chmod +x /health-check.sh
+
+# Expose port 80 for the Magic dashboard
+EXPOSE 80
+
+# Environment variables with defaults for Unraid
+ENV FLASK_ENV=production \
+    NODE_ENV=production \
+    DATABASE_URL=sqlite:///app/data/hoof_hearted.db \
+    GPU_MONITORING_ENABLED=true \
+    SYSTEM_MONITORING_ENABLED=true \
+    UPDATE_FREQUENCY=normal \
+    ENABLE_PROCESS_MONITORING=true \
+    LOG_LEVEL=INFO \
+    DASHBOARD_PORT=80 \
+    API_URL=http://localhost:5000 \
+    VITE_API_URL=http://localhost:5000
+
+# Create directories for Unraid persistence
+RUN mkdir -p /app/data /app/config && \
+    chown -R root:root /app/data /app/config
+
+# SpicyRiceCakes metadata
+LABEL maintainer="SpicyRiceCakes <contact@spicyricecakes.com>" \
+      description="Hoof Hearted - Home Server Monitoring Dashboard with Vue.js Magic UI (Unraid Ready)" \
+      version="2.0.0-unraid" \
+      architecture="multi-platform" \
+      features="vue-magic-dashboard,real-api-integration,gpu-monitoring,websocket-updates,unraid-optimized"
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=30s --retries=3 \
+    CMD /health-check.sh
+
+# Start supervisor to manage both nginx and flask
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
