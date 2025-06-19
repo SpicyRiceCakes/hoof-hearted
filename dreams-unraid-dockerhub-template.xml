@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Container version="2">
   <Name>Hoof Hearted</Name>
-  <Repository>spicyricecakes/hoof-hearted:latest</Repository>
+  <Repository>nappuntokki/hoof-hearted:latest</Repository>
   <Registry>https://registry.hub.docker.com/</Registry>
   <Network>bridge</Network>
   <MyIP/>
@@ -23,6 +23,10 @@
   <Branch>
     <Tag>latest</Tag>
     <TagDescription>Latest stable version</TagDescription>
+  </Branch>
+  <Branch>
+    <Tag>v1.0.0</Tag>
+    <TagDescription>Version 1.0.0 - Initial release</TagDescription>
   </Branch>
   <Requires/>
   <Config Name="Container Port" Target="8080" Default="909" Mode="tcp" Description="Web interface port for Hoof Hearted monitoring dashboard" Type="Port" Display="always" Required="true" Mask="false">909</Config>
