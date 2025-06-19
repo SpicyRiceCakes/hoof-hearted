@@ -1,0 +1,61 @@
+{
+  "name": "hoof-hearted",
+  "version": "1.0.0",
+  "description": "🐎 Hoof Hearted - Home Server Monitoring Dashboard",
+  "private": true,
+  "scripts": {
+    "dev": "docker-compose up --build -d",
+    "down": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "clean": "docker-compose down -v && docker system prune -f",
+    
+    "test:dev": "docker-compose -f docker-compose.test.yml up -d frontend-dev backend-dev test-database",
+    "test:prod": "docker-compose -f docker-compose.test.yml up -d frontend-prod backend-prod test-database",
+    "test:down": "docker-compose -f docker-compose.test.yml down",
+    "test:clean": "docker-compose -f docker-compose.test.yml down -v --rmi all",
+    
+    "test": "cd src/frontend && npm run test",
+    "test:ui": "cd src/frontend && npm run test:ui",
+    "test:quick": "cd src/frontend && npm run test:quick",
+    "test:mobile": "cd src/frontend && npm run test:mobile",
+    "test:report": "cd src/frontend && npm run test:report",
+    
+    "test:with-docker": "npm run test:dev && sleep 10 && npm run test:quick && npm run test:down",
+    "test:full-pipeline": "npm run test:dev && sleep 10 && npm run test && npm run test:down && npm run test:prod && sleep 15 && npm run test:quick && npm run test:down",
+    
+    "frontend:install": "cd src/frontend && npm install",
+    "backend:install": "cd src/backend && pip install -r requirements.txt",
+    "install:all": "npm run frontend:install && npm run backend:install",
+    
+    "lint": "cd src/frontend && npm run lint",
+    "format": "cd src/frontend && npm run format",
+    
+    "status": "docker-compose ps",
+    "health": "docker-compose exec backend curl -f http://localhost:5000/health && docker-compose exec frontend curl -f http://localhost:80/health"
+  },
+  "keywords": [
+    "monitoring",
+    "dashboard",
+    "gpu",
+    "system",
+    "home-server",
+    "docker",
+    "vue",
+    "flask",
+    "postgresql",
+    "spicyricecakes"
+  ],
+  "author": "SpicyRiceCakes",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spicyricecakes/hoof-hearted.git"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  }
+}

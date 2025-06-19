@@ -1,0 +1,61 @@
+{
+  "name": "hoof-hearted-frontend",
+  "version": "1.0.0",
+  "description": "🐎 Hoof Hearted - Home Server Monitoring Dashboard Frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0 --port 5173",
+    "build": "vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
+    "format": "prettier --write src/",
+    
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:report": "playwright show-report",
+    
+    "docker:dev": "docker-compose -f ../../docker-compose.test.yml up --build frontend-dev",
+    "docker:prod-test": "docker-compose -f ../../docker-compose.test.yml up --build frontend-prod",
+    "docker:down": "docker-compose -f ../../docker-compose.test.yml down",
+    "docker:clean": "docker-compose -f ../../docker-compose.test.yml down -v --rmi all",
+    
+    "test:with-docker": "npm run docker:dev -d && npm run test && npm run docker:down",
+    "test:quick": "playwright test --project=chromium",
+    "test:mobile": "playwright test --project='Mobile Chrome'"
+  },
+  "dependencies": {
+    "vue": "^3.4.0",
+    "vue-router": "^4.2.0",
+    "pinia": "^2.1.0",
+    "socket.io-client": "^4.7.0",
+    "chart.js": "^4.4.0",
+    "vue-chartjs": "^5.3.0",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.5.0",
+    "@vue/eslint-config-prettier": "^8.0.0",
+    "eslint": "^8.49.0",
+    "eslint-plugin-vue": "^9.17.0",
+    "prettier": "^3.0.0",
+    "vite": "^5.0.0",
+    "@playwright/test": "^1.40.0"
+  },
+  "author": "SpicyRiceCakes",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/spicyricecakes/hoof-hearted.git"
+  },
+  "keywords": [
+    "monitoring",
+    "dashboard",
+    "gpu",
+    "system",
+    "home-server",
+    "spicyricecakes"
+  ]
+}

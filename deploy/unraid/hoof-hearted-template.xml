@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<Container version="2">
+  <Name>HoofHearted</Name>
+  <Repository>spicyricecakes/hoof-hearted:latest</Repository>
+  <Registry>https://hub.docker.com/r/spicyricecakes/hoof-hearted</Registry>
+  <Network>bridge</Network>
+  <MyIP/>
+  <Shell>bash</Shell>
+  <Privileged>false</Privileged>
+  <Support>https://github.com/spicyricecakes/hoof-hearted/issues</Support>
+  <Project>https://github.com/spicyricecakes/hoof-hearted</Project>
+  <Overview>
+    🐎 Hoof Hearted - Home Server Monitoring Dashboard
+    
+    Answer "Why is my GPU fan running?" with real-time system monitoring and process identification.
+    
+    Features:
+    • Real-time GPU, CPU, and memory monitoring
+    • Process identification and resource usage tracking
+    • Mobile-friendly dashboard accessible from any device
+    • Historical data and trend analysis
+    • Configurable alerts and notifications
+    • Zero external dependencies - all data stays local
+    
+    🌶️ Built with SpicyRiceCakes philosophy: Emotion → Logic → Joy
+    
+    Default dashboard port: 0909 (Korean fart humor! 공구공구)
+    
+    Perfect for home servers, gaming rigs, and workstations.
+  </Overview>
+  <Category>Tools:System</Category>
+  <WebUI>http://[IP]:[PORT:0909]</WebUI>
+  <TemplateURL>https://raw.githubusercontent.com/spicyricecakes/hoof-hearted/main/deploy/unraid/hoof-hearted-template.xml</TemplateURL>
+  <Icon>https://raw.githubusercontent.com/spicyricecakes/hoof-hearted/main/assets/hoof-hearted-icon.png</Icon>
+  <ExtraParams>
+    --hostname=hoof-hearted
+    --add-host=host.docker.internal:host-gateway
+    -v /var/run/docker.sock:/var/run/docker.sock:ro
+    -v /proc:/host/proc:ro
+    -v /sys:/host/sys:ro
+  </ExtraParams>
+  <PostArgs/>
+  <CPUset/>
+  <DateInstalled>1640995200</DateInstalled>
+  <DonateText/>
+  <DonateLink/>
+  <Description>
+    🐎 Hoof Hearted - Home Server Monitoring Dashboard
+    
+    Real-time system monitoring for answering "Why is my GPU fan running?"
+    
+    🌶️ SpicyRiceCakes - Making dreams reality through AI-human collaboration
+  </Description>
+  <Networking>
+    <Mode>bridge</Mode>
+    <Publish>
+      <Port>
+        <HostPort>0909</HostPort>
+        <ContainerPort>80</ContainerPort>
+        <Protocol>tcp</Protocol>
+      </Port>
+    </Publish>
+  </Networking>
+  <Data>
+    <Volume>
+      <HostDir>/mnt/user/appdata/hoof-hearted/config</HostDir>
+      <ContainerDir>/app/config</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/mnt/user/appdata/hoof-hearted/data</HostDir>
+      <ContainerDir>/app/data</ContainerDir>
+      <Mode>rw</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/var/run/docker.sock</HostDir>
+      <ContainerDir>/var/run/docker.sock</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/proc</HostDir>
+      <ContainerDir>/host/proc</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
+    <Volume>
+      <HostDir>/sys</HostDir>
+      <ContainerDir>/host/sys</ContainerDir>
+      <Mode>ro</Mode>
+    </Volume>
+  </Data>
+  <Environment>
+    <Variable>
+      <Value>0909</Value>
+      <Name>DASHBOARD_PORT</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>production</Value>
+      <Name>FLASK_ENV</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>hoof_hearted</Value>
+      <Name>DB_NAME</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>hoof_hearted</Value>
+      <Name>DB_USER</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>auto</Value>
+      <Name>GPU_MONITORING</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>5</Value>
+      <Name>METRICS_INTERVAL</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>true</Value>
+      <Name>ENABLE_PROCESS_MONITORING</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>80</Value>
+      <Name>CPU_ALERT_THRESHOLD</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>85</Value>
+      <Name>GPU_ALERT_THRESHOLD</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>90</Value>
+      <Name>MEMORY_ALERT_THRESHOLD</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>auto</Value>
+      <Name>DEFAULT_THEME</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>true</Value>
+      <Name>SHOW_ATTRIBUTION</Name>
+      <Mode/>
+    </Variable>
+    <Variable>
+      <Value>Hoof Hearted Server Monitor</Value>
+      <Name>CUSTOM_TITLE</Name>
+      <Mode/>
+    </Variable>
+  </Environment>
+  <Labels/>
+  <Config Name="Dashboard Port" Target="80" Default="0909" Mode="tcp" Description="Port for accessing the web dashboard (default: 0909 - SpicyRiceCakes fart humor!)" Type="Port" Display="always" Required="true" Mask="false">0909</Config>
+  <Config Name="Config Directory" Target="/app/config" Default="/mnt/user/appdata/hoof-hearted/config" Mode="rw" Description="Directory for configuration files" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/hoof-hearted/config</Config>
+  <Config Name="Data Directory" Target="/app/data" Default="/mnt/user/appdata/hoof-hearted/data" Mode="rw" Description="Directory for database and persistent data" Type="Path" Display="always" Required="true" Mask="false">/mnt/user/appdata/hoof-hearted/data</Config>
+  <Config Name="Docker Socket" Target="/var/run/docker.sock" Default="/var/run/docker.sock" Mode="ro" Description="Docker socket for container monitoring (read-only)" Type="Path" Display="always" Required="true" Mask="false">/var/run/docker.sock</Config>
+  <Config Name="Host Proc" Target="/host/proc" Default="/proc" Mode="ro" Description="Host /proc filesystem for process monitoring" Type="Path" Display="always" Required="true" Mask="false">/proc</Config>
+  <Config Name="Host Sys" Target="/host/sys" Default="/sys" Mode="ro" Description="Host /sys filesystem for system monitoring" Type="Path" Display="always" Required="true" Mask="false">/sys</Config>
+  
+  <Config Name="Dashboard Port (ENV)" Target="DASHBOARD_PORT" Default="0909" Mode="" Description="Dashboard port (matches the port mapping above)" Type="Variable" Display="always" Required="true" Mask="false">0909</Config>
+  <Config Name="Flask Environment" Target="FLASK_ENV" Default="production" Mode="" Description="Flask environment (development/production)" Type="Variable" Display="always" Required="false" Mask="false">production</Config>
+  <Config Name="Database Name" Target="DB_NAME" Default="hoof_hearted" Mode="" Description="PostgreSQL database name" Type="Variable" Display="always" Required="false" Mask="false">hoof_hearted</Config>
+  <Config Name="Database User" Target="DB_USER" Default="hoof_hearted" Mode="" Description="PostgreSQL database user" Type="Variable" Display="always" Required="false" Mask="false">hoof_hearted</Config>
+  <Config Name="GPU Monitoring" Target="GPU_MONITORING" Default="auto" Mode="" Description="GPU monitoring type (nvidia/amd/auto)" Type="Variable" Display="always" Required="false" Mask="false">auto</Config>
+  <Config Name="Metrics Interval" Target="METRICS_INTERVAL" Default="5" Mode="" Description="Metrics collection interval in seconds" Type="Variable" Display="always" Required="false" Mask="false">5</Config>
+  <Config Name="Process Monitoring" Target="ENABLE_PROCESS_MONITORING" Default="true" Mode="" Description="Enable process monitoring and identification" Type="Variable" Display="always" Required="false" Mask="false">true</Config>
+  <Config Name="CPU Alert Threshold" Target="CPU_ALERT_THRESHOLD" Default="80" Mode="" Description="CPU usage alert threshold percentage" Type="Variable" Display="always" Required="false" Mask="false">80</Config>
+  <Config Name="GPU Alert Threshold" Target="GPU_ALERT_THRESHOLD" Default="85" Mode="" Description="GPU usage alert threshold percentage" Type="Variable" Display="always" Required="false" Mask="false">85</Config>
+  <Config Name="Memory Alert Threshold" Target="MEMORY_ALERT_THRESHOLD" Default="90" Mode="" Description="Memory usage alert threshold percentage" Type="Variable" Display="always" Required="false" Mask="false">90</Config>
+  <Config Name="Default Theme" Target="DEFAULT_THEME" Default="auto" Mode="" Description="Default UI theme (light/dark/auto)" Type="Variable" Display="always" Required="false" Mask="false">auto</Config>
+  <Config Name="Show Attribution" Target="SHOW_ATTRIBUTION" Default="true" Mode="" Description="Show SpicyRiceCakes attribution in footer" Type="Variable" Display="always" Required="false" Mask="false">true</Config>
+  <Config Name="Custom Title" Target="CUSTOM_TITLE" Default="Hoof Hearted Server Monitor" Mode="" Description="Custom title for the dashboard" Type="Variable" Display="always" Required="false" Mask="false">Hoof Hearted Server Monitor</Config>
+</Container>

@@ -1,0 +1,494 @@
+{
+  "config": {
+    "configFile": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/playwright.config.ts",
+    "rootDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 7
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "html",
+        {
+          "outputFolder": "playwright-report"
+        }
+      ],
+      [
+        "json",
+        {
+          "outputFile": "test-results/results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 7
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 7
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 7
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 7
+        },
+        "id": "Mobile Chrome",
+        "name": "Mobile Chrome",
+        "testDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      },
+      {
+        "outputDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 7
+        },
+        "id": "Mobile Safari",
+        "name": "Mobile Safari",
+        "testDir": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 60000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.53.1",
+    "workers": 7,
+    "webServer": {
+      "command": null,
+      "url": "http://localhost:5174",
+      "reuseExistingServer": true,
+      "timeout": 30000
+    }
+  },
+  "suites": [
+    {
+      "title": "dashboard-basic.spec.ts",
+      "file": "dashboard-basic.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Dashboard Homepage",
+          "file": "dashboard-basic.spec.ts",
+          "line": 9,
+          "column": 6,
+          "specs": [
+            {
+              "title": "loads successfully and has correct title",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1572,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-19T02:59:32.697Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3be52df899a5241e24e3-b7cc562a8a3976fd36ae",
+              "file": "dashboard-basic.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "displays connection status indicators",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 1490,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-19T02:59:32.720Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3be52df899a5241e24e3-36ecf46b2db74d073e3a",
+              "file": "dashboard-basic.spec.ts",
+              "line": 20,
+              "column": 3
+            },
+            {
+              "title": "displays monitoring dashboard elements",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 1515,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n    at /Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests/dashboard-basic.spec.ts:47:42",
+                        "location": {
+                          "file": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests/dashboard-basic.spec.ts",
+                          "column": 42,
+                          "line": 47
+                        },
+                        "snippet": "  45 |     const widgetVisible = await monitoringWidget.isVisible();\n  46 |     \n> 47 |     expect(gridVisible || widgetVisible).toBeTruthy();\n     |                                          ^\n  48 |   });\n  49 | });\n  50 |"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests/dashboard-basic.spec.ts",
+                            "column": 42,
+                            "line": 47
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeTruthy\u001b[2m()\u001b[22m\n\nReceived: \u001b[31mfalse\u001b[39m\n\n  45 |     const widgetVisible = await monitoringWidget.isVisible();\n  46 |     \n> 47 |     expect(gridVisible || widgetVisible).toBeTruthy();\n     |                                          ^\n  48 |   });\n  49 | });\n  50 |\n    at /Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests/dashboard-basic.spec.ts:47:42"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-19T02:59:32.706Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/test-results/dashboard-basic-Dashboard--c5b2a-nitoring-dashboard-elements-chromium/test-failed-1.png"
+                        },
+                        {
+                          "name": "video",
+                          "contentType": "video/webm",
+                          "path": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/test-results/dashboard-basic-Dashboard--c5b2a-nitoring-dashboard-elements-chromium/video.webm"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/test-results/dashboard-basic-Dashboard--c5b2a-nitoring-dashboard-elements-chromium/error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "/Users/davidkim/SpicyRiceCakes/projects/1018-hoof-hearted/src/frontend/tests/dashboard-basic.spec.ts",
+                        "column": 42,
+                        "line": 47
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "3be52df899a5241e24e3-d73a8d16df8fa774df13",
+              "file": "dashboard-basic.spec.ts",
+              "line": 36,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Responsive Design",
+          "file": "dashboard-basic.spec.ts",
+          "line": 51,
+          "column": 6,
+          "specs": [
+            {
+              "title": "displays correctly on mobile devices",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 1529,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-19T02:59:32.712Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3be52df899a5241e24e3-8f8146ef1e907a250939",
+              "file": "dashboard-basic.spec.ts",
+              "line": 52,
+              "column": 3
+            },
+            {
+              "title": "navigation works on tablet sizes",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 1478,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-19T02:59:32.708Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3be52df899a5241e24e3-cb57112a65607959014e",
+              "file": "dashboard-basic.spec.ts",
+              "line": 65,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "API Integration",
+          "file": "dashboard-basic.spec.ts",
+          "line": 78,
+          "column": 6,
+          "specs": [
+            {
+              "title": "can connect to backend API",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 5,
+                      "status": "passed",
+                      "duration": 1757,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-19T02:59:32.722Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3be52df899a5241e24e3-736335e78f1ff30487a3",
+              "file": "dashboard-basic.spec.ts",
+              "line": 79,
+              "column": 3
+            }
+          ]
+        },
+        {
+          "title": "Performance",
+          "file": "dashboard-basic.spec.ts",
+          "line": 94,
+          "column": 6,
+          "specs": [
+            {
+              "title": "page loads within acceptable time",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 6,
+                      "parallelIndex": 6,
+                      "status": "passed",
+                      "duration": 1775,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-19T02:59:32.729Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3be52df899a5241e24e3-44432341575aaaec2583",
+              "file": "dashboard-basic.spec.ts",
+              "line": 95,
+              "column": 3
+            },
+            {
+              "title": "dashboard updates without excessive requests",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 60000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 4,
+                      "status": "passed",
+                      "duration": 5327,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-06-19T02:59:34.632Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "3be52df899a5241e24e3-86a0412f39ea6078188d",
+              "file": "dashboard-basic.spec.ts",
+              "line": 105,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-06-19T02:59:32.203Z",
+    "duration": 7785.096,
+    "expected": 7,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

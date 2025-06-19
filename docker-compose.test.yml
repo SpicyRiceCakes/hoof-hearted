@@ -1,0 +1,122 @@
+# 🐎 Hoof Hearted - Docker Compose for Testing
+# Based on src-brain external testing architecture
+# App runs in Docker, tests run on host machine for better debugging
+
+services:
+  # PostgreSQL Database for Testing
+  test-database:
+    image: postgres:15-alpine
+    container_name: hoof-hearted-test-db
+    environment:
+      POSTGRES_DB: ${DB_NAME:-hoof_hearted_test}
+      POSTGRES_USER: ${DB_USER:-hoof_hearted}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-test_password}
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data
+      - ./deploy/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    ports:
+      - "5433:5432"  # Different port to avoid conflicts
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-hoof_hearted} -d ${DB_NAME:-hoof_hearted_test}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - test-network
+
+  # Backend Development Service for External Testing
+  backend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      target: backend-development
+    container_name: hoof-hearted-test-backend-dev
+    ports:
+      - "5002:5000"  # Unique port for dev testing
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER:-hoof_hearted}:${DB_PASSWORD:-test_password}@test-database:5432/${DB_NAME:-hoof_hearted_test}
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+      - SECRET_KEY=test-secret-key
+      - WEBSOCKET_PORT=5000
+    volumes:
+      - ./src/backend:/app
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+    depends_on:
+      test-database:
+        condition: service_healthy
+    networks:
+      - test-network
+
+  # Backend Production Service for Production Testing
+  backend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      target: backend-production
+    container_name: hoof-hearted-test-backend-prod
+    ports:
+      - "5003:5000"  # Unique port for prod testing
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER:-hoof_hearted}:${DB_PASSWORD:-test_password}@test-database:5432/${DB_NAME:-hoof_hearted_test}
+      - FLASK_ENV=production
+      - FLASK_DEBUG=0
+      - SECRET_KEY=production-test-secret
+      - WEBSOCKET_PORT=5000
+    depends_on:
+      test-database:
+        condition: service_healthy
+    networks:
+      - test-network
+
+  # Frontend Development Service for External Testing
+  frontend-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      target: frontend-development
+    container_name: hoof-hearted-test-frontend-dev
+    ports:
+      - "5174:5173"  # Unique port for dev testing
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:5002  # Points to dev backend
+    volumes:
+      - ./src/frontend:/app
+      - /app/node_modules  # Prevent overwriting
+      - /app/.vite         # Prevent overwriting
+    depends_on:
+      - backend-dev
+    networks:
+      - test-network
+
+  # Frontend Production Service for Production Testing
+  frontend-prod:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+      target: frontend-nginx-production
+    container_name: hoof-hearted-test-frontend-prod
+    ports:
+      - "8081:80"  # Unique port for prod testing
+    environment:
+      - NODE_ENV=production
+      - API_URL=http://backend-prod:5000
+    volumes:
+      - ./deploy/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend-prod
+    networks:
+      - test-network
+
+volumes:
+  test_postgres_data:
+    driver: local
+
+networks:
+  test-network:
+    driver: bridge
+    name: hoof-hearted-test-network
